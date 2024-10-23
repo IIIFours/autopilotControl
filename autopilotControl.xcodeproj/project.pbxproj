@@ -27,6 +27,7 @@
 		CA470A2B2CC97F8E0013F15E /* autopilotControl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = autopilotControl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA470A3B2CC97F900013F15E /* autopilotControlTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = autopilotControlTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA470A452CC97F900013F15E /* autopilotControlUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = autopilotControlUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA470A5A2CC986680013F15E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +76,7 @@
 		CA470A222CC97F8E0013F15E = {
 			isa = PBXGroup;
 			children = (
+				CA470A5A2CC986680013F15E /* Info.plist */,
 				CA470A2D2CC97F8E0013F15E /* autopilotControl */,
 				CA470A3E2CC97F900013F15E /* autopilotControlTests */,
 				CA470A482CC97F900013F15E /* autopilotControlUITests */,
@@ -321,6 +323,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -378,6 +381,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -396,6 +400,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"autopilotControl/Preview Content\"";
+				DEVELOPMENT_TEAM = GASRRGZC6Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -424,6 +429,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"autopilotControl/Preview Content\"";
+				DEVELOPMENT_TEAM = GASRRGZC6Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
