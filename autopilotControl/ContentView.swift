@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var bleManager = BLEManager() // ObservedObject to track BLE changes
+    @ObservedObject var bleManager = BLEManager();
         
         var body: some View {
             VStack {
                 if bleManager.isConnected {
-                    Text("Connected to BLE Module")
+                    Text("Connected to Autopilot")
                         .foregroundColor(.green)
                 } else {
                     Text("Connecting...")
