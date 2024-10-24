@@ -66,7 +66,7 @@ struct Autopilot: CustomStringConvertible {
     var previousDestinationLongitudeDescription: String { "Previous Destination Longitude: \(previousDestinationLongitude)" }
     var headingDescription: String { "Current Heading: \(heading)" }
     var xteDescription: String { "Cross-Track Error (XTE): \(xte)" }
-    var previousXteDescription: String { "Previous Cross-Track Error (Previous XTE): \(previousXte)" }
+    var previousXteDescription: String { "Previous Cross-Track Error: \(previousXte)" }
     var previousTimeDescription: String { "Previous Time: \(previousTime)" }
     var previousBearingDescription: String { "Previous Bearing: \(previousBearing)" }
     var integralXTEDescription: String { "Integral of Cross-Track Error: \(integralXTE)" }
@@ -151,6 +151,19 @@ extension Autopilot {
     }
 }
 
+struct PIDs {
+    var kp: Float
+    var ki: Float
+    var kd: Float
+}
+
+extension PIDs {
+    func toData() -> Data {
+        var copy = self
+        return withUnsafeBytes(of: &copy) { Data($0) }
+    }
+}
+
 extension Float {
     // Rounds the float to the specified number of decimal places
     func rounded(toPlaces places: Int) -> Float {
@@ -163,7 +176,8 @@ extension Float {
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     var centralManager: CBCentralManager!
     var connectedPeripheral: CBPeripheral?
-    var targetCharacteristic: CBCharacteristic?
+    var autopilotCharacteristic: CBCharacteristic?
+    var pidCharacteristic: CBCharacteristic?
     
     @Published var isConnected = false
     @Published var autopilot: Autopilot = Autopilot(
@@ -188,9 +202,11 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         targetMotorPosition: 0.0,
         homingComplete: false
     );
+    @Published var pids: PIDs = PIDs(kp: 0.0, ki: 0.0, kd: 0.0)
     
-    let targetServiceUUID = CBUUID(string: "4fafc201-1fb5-459e-8fcc-c5c9c331914b") // Replace with your service UUID
-    let targetCharacteristicUUID = CBUUID(string: "beb5483e-36e1-4688-b7f5-ea07361b26a8") // Replace with your characteristic UUID
+    let targetServiceUUID = CBUUID(string: "4fafc201-1fb5-459e-8fcc-c5c9c331914b")
+    let autopilotCharacteristicUUID = CBUUID(string: "beb5483e-36e1-4688-b7f5-ea07361b26a8")
+    let pidCharacteristicUUID = CBUUID(string: "98ab29d2-2b95-497d-9df7-f064e5ac05a5")
     
     override init() {
         super.init()
@@ -220,13 +236,20 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         peripheral.discoverServices([targetServiceUUID])
     }
     
-    // MARK: - Peripheral Delegate
-    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        print("Disconnected from peripheral: \(peripheral.name ?? "Unknown")")
+        isConnected = false
+        if let error = error {
+            print("Disconnection error: \(error.localizedDescription)")
+        }
+        centralManager.connect(peripheral, options: nil)
+    }
+        
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if let services = peripheral.services {
             for service in services {
                 if service.uuid == targetServiceUUID {
-                    peripheral.discoverCharacteristics([targetCharacteristicUUID], for: service)
+                    peripheral.discoverCharacteristics([autopilotCharacteristicUUID, pidCharacteristicUUID], for: service)
                 }
             }
         }
@@ -235,10 +258,15 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if let characteristics = service.characteristics {
             for characteristic in characteristics {
-                if characteristic.uuid == targetCharacteristicUUID {
+                if characteristic.uuid == autopilotCharacteristicUUID {
                     peripheral.readValue(for: characteristic)
                     peripheral.setNotifyValue(true, for: characteristic)
-                    targetCharacteristic = characteristic
+                    autopilotCharacteristic = characteristic
+                }
+                if characteristic.uuid == pidCharacteristicUUID {
+                    peripheral.readValue(for: characteristic)
+                    peripheral.setNotifyValue(true, for: characteristic)
+                    pidCharacteristic = characteristic
                 }
             }
         }
@@ -247,23 +275,30 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if let value = characteristic.value {
             DispatchQueue.main.async {
-                let autopilot = deserializeAutopilot(data: value);
-                self.autopilot = autopilot;
+                if (characteristic.uuid == self.autopilotCharacteristicUUID) {
+                    let autopilot = deserializeAutopilot(data: value);
+                    self.autopilot = autopilot;
+                }
             }
         }
     }
     
-    func writeToCharacteristic(autopilot: Autopilot) {
+    func writeToCharacteristic(targetCharacteristic: CBCharacteristic?) {
+        var data = Data();
         if let peripheral = connectedPeripheral, let characteristic = targetCharacteristic {
-            let data = autopilot.toData()  // Serialize the Autopilot struct to Data
-            peripheral.writeValue(data, for: characteristic, type: .withResponse)  // Write the data to the characteristic
+            if targetCharacteristic?.uuid == autopilotCharacteristicUUID {
+                data = autopilot.toData()
+            } else if targetCharacteristic?.uuid == pidCharacteristicUUID {
+                data = pids.toData();
+            }
+            peripheral.writeValue(data, for: characteristic, type: .withResponse)
         }
     }
     
     func sendUpdatedPIDValues(kpInput: Float, kiInput: Float, kdInput: Float) {
-        autopilot.kp = kpInput.rounded(toPlaces: 1);
-        autopilot.ki = kiInput.rounded(toPlaces: 1);
-        autopilot.kd = kdInput.rounded(toPlaces: 1);
-        writeToCharacteristic(autopilot: autopilot);
+        pids.kp = kpInput.rounded(toPlaces: 1);
+        pids.ki = kiInput.rounded(toPlaces: 1);
+        pids.kd = kdInput.rounded(toPlaces: 1);
+        writeToCharacteristic(targetCharacteristic: pidCharacteristic);
     }
 }

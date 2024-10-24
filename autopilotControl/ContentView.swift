@@ -18,45 +18,31 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack() {
-                if bleManager.isConnected && bleManager.autopilot.kp != 0.0 && bleManager.autopilot.ki != 0.0 && bleManager.autopilot.kd != 0.0 {
+                if bleManager.isConnected {
                     VStack() {
                         HStack {
-                            Label {
-                                VStack(alignment: .leading) {
-                                    Text("Proportional")
-                                }
-                            } icon: {
-                                Image(systemName: "angle")
+                            VStack(alignment: .leading) {
+                                Text("Proportional (Kp)")
                             }
                             Stepper("", value: $kpInput, in: 0...10, step: 0.1)
                             Text("\(String(format: "%.1f", kpInput))")
-                        }.padding(.bottom)
+                        }.padding(.horizontal)
                         
                         HStack {
-                            Label {
-                                VStack(alignment: .leading) {
-                                    Text("Integral")
-                                }
-                            } icon: {
-                                Image(systemName: "sum")
+                            VStack(alignment: .leading) {
+                                Text("Integral (Ki)")
                             }
-                            Spacer()
                             Stepper("", value: $kiInput, in: 0...10, step: 0.1)
                             Text("\(String(format: "%.1f", kiInput))")
-                        }.padding(.bottom)
+                        }.padding(.horizontal)
                         
                         HStack {
-                            Label {
-                                VStack(alignment: .leading) {
-                                    Text("Derivative")
-                                }
-                            } icon: {
-                                Image(systemName: "function")
+                            VStack(alignment: .leading) {
+                                Text("Derivative (Kd)")
                             }
-                            Spacer()
                             Stepper("", value: $kdInput, in: 0...10, step: 0.1)
                             Text("\(String(format: "%.1f", kdInput))")
-                        }.padding(.bottom)
+                        }.padding(.horizontal)
                         
                         Button(action: {
                             bleManager.sendUpdatedPIDValues(kpInput: kpInput, kiInput: kiInput, kdInput: kdInput);
@@ -66,17 +52,7 @@ struct ContentView: View {
                                 .background(Color.teal)
                                 .foregroundColor(.black)
                                 .cornerRadius(10)
-                        }.padding(.bottom)
-                        HStack {
-                            Label {
-                                VStack(alignment: .leading) {
-                                    Text("Active")
-                                }
-                            } icon: {
-                                Image(systemName: "clock")
-                            }
-                            Text("\(String(format: "%.fmin", (bleManager.autopilot.previousTime/1000)/60))")
-                        }.padding(.bottom)
+                        }.padding()
                         List {
                             ForEach(bleManager.autopilot.allDescriptions(), id: \.self) { description in
                                 Text(description)
@@ -92,7 +68,7 @@ struct ContentView: View {
                         }
                     }
                 } else {
-                    Text("Waiting for connection...")
+                    Text("Connecting...")
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                 }
