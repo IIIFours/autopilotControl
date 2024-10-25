@@ -275,7 +275,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if let value = characteristic.value {
             DispatchQueue.main.async {
-                if (characteristic.uuid == self.autopilotCharacteristicUUID) {
+                if (characteristic.uuid == self.autopilotCharacteristicUUID && value.count > 0) {
                     let autopilot = deserializeAutopilot(data: value);
                     self.autopilot = autopilot;
                 }

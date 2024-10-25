@@ -18,13 +18,13 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack() {
-                if bleManager.isConnected {
+                if bleManager.isConnected && bleManager.autopilot.kp != 0.0 && bleManager.autopilot.ki != 0.0 && bleManager.autopilot.kd != 0.0 {
                     VStack() {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("Proportional (Kp)")
                             }
-                            Stepper("", value: $kpInput, in: 0...10, step: 0.1)
+                            Stepper("", value: $kpInput, in: 0.1...10, step: 0.1)
                             Text("\(String(format: "%.1f", kpInput))")
                         }.padding(.horizontal)
                         
@@ -32,7 +32,7 @@ struct ContentView: View {
                             VStack(alignment: .leading) {
                                 Text("Integral (Ki)")
                             }
-                            Stepper("", value: $kiInput, in: 0...10, step: 0.1)
+                            Stepper("", value: $kiInput, in: 0.1...10, step: 0.1)
                             Text("\(String(format: "%.1f", kiInput))")
                         }.padding(.horizontal)
                         
@@ -40,7 +40,7 @@ struct ContentView: View {
                             VStack(alignment: .leading) {
                                 Text("Derivative (Kd)")
                             }
-                            Stepper("", value: $kdInput, in: 0...10, step: 0.1)
+                            Stepper("", value: $kdInput, in: 0.1...10, step: 0.1)
                             Text("\(String(format: "%.1f", kdInput))")
                         }.padding(.horizontal)
                         
@@ -74,7 +74,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            .navigationTitle("Autopilot Control")
+            .navigationTitle("Autopilot")
         }
     }
 }
