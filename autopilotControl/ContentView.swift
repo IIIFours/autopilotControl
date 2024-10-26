@@ -16,9 +16,9 @@ struct ContentView: View {
     @State private var valuesInitialized = false;
         
     var body: some View {
-        NavigationView {
-            VStack() {
-                if bleManager.isConnected && bleManager.autopilot.kp != 0.0 && bleManager.autopilot.ki != 0.0 && bleManager.autopilot.kd != 0.0 {
+        ZStack() {
+            NavigationView {
+                VStack() {
                     VStack() {
                         HStack {
                             VStack(alignment: .leading) {
@@ -67,14 +67,29 @@ struct ContentView: View {
                             self.valuesInitialized = true;
                         }
                     }
-                } else {
-                    Text("Connecting...")
+                }
+                .padding()
+                .navigationTitle("Autopilot")
+            }
+            if !bleManager.isConnected {
+                Color.black.opacity(0.7) // Dim everything behind the modal
+                                    .edgesIgnoringSafeArea(.all)
+                VStack {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
+                        .tint(Color.white)
+                        .scaleEffect(1.5)
+                        .padding()
+                    
+                    Text("Connecting to Autopilot...")
+                        .padding(.bottom)
+                        .foregroundStyle(Color.white)
                 }
+                .padding(30)
+                .background(Color.black)
+                .cornerRadius(12)
+                .shadow(radius: 100)
             }
-            .padding()
-            .navigationTitle("Autopilot")
         }
     }
 }
