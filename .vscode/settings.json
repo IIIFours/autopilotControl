@@ -1,0 +1,21 @@
+{
+    "sourcekit-lsp.serverPath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
+    "swift.languageServerMode": "sourcekit-lsp",
+    "swift.path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+    "files.associations": {
+        "*.swift": "swift"
+    },
+    "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+    "lldb.launch.expressions": "native",
+    "editor.formatOnSave": true,
+    "swift.format.indent": 4,
+    "swift.format.respectsExistingLineBreaks": true,
+    "inject.watchFolders": [
+        "${workspaceFolder}/autopilotControl"
+    ],
+    "inject.autoStartFileWatcher": true,
+    "inject.port": 8080,
+    "swift.swiftEnvironmentVariables": {
+        "DEVELOPER_DIR": "/Applications/Xcode.app"
+    }
+}

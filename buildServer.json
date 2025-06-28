@@ -1,0 +1,19 @@
+{
+	"name": "xcode build server",
+	"version": "0.2",
+	"bspVersion": "2.0",
+	"languages": [
+		"c",
+		"cpp",
+		"objective-c",
+		"objective-cpp",
+		"swift"
+	],
+	"argv": [
+		"/opt/homebrew/bin/xcode-build-server"
+	],
+	"workspace": "/Users/alexanderschlake/dev/autopilotControl/autopilotControl.xcodeproj/project.xcworkspace",
+	"build_root": "/Users/alexanderschlake/Library/Developer/Xcode/DerivedData/autopilotControl-gglaiaakemfitgegqylnaikysxdx",
+	"scheme": "autopilotControl",
+	"kind": "xcode"
+}
